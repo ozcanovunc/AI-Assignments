@@ -1,37 +1,14 @@
-import java.awt.*;
-import javax.swing.*;
+import java.io.IOException;
 
-public class GoGame extends JFrame {
-    
-    private JPanel panel;
-    private GoButton[][] buttons;
+public class GoGame {
 
-    public static void main(String[] args) {
-        new GoGame();
-    }
-    
-    public GoGame() {
-        super("GoGame");
-        panel = new JPanel();
-        initBoard(3, 4);
-    }
-    
-    private void initBoard(int rows, int cols) {
-  
-        buttons = new GoButton[rows][cols];
+    public static void main(String[] args) throws IOException {
         
-        setSize(cols * 100, rows * 100);
-        setResizable(false);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        panel.setLayout(new GridLayout(rows, cols));
+        GoBfs game = new GoBfs(3,4);
 
-        for (int ri = 0; ri < rows; ++ri) {
-            for (int ci = 0; ci < cols; ++ci) {
-                buttons[ri][ci] = new GoButton();
-                panel.add(buttons[ri][ci]);
-            }
-        }
-        add(panel);
-        setVisible(true);
+        System.in.read();
+        
+        GoNode resultNode = game.treeSearch();      
+        System.out.println(resultNode);
     }
 }
