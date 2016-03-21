@@ -14,15 +14,6 @@ public abstract class AbstractGo extends JFrame {
     
     abstract GoNode treeSearch();
     abstract List<GoNode> expand(GoNode parent);
-    
-    void initBoardState() {
-    
-        for (int ri = 0; ri < rows; ++ri) {
-            for (int ci = 0; ci < cols; ++ci) {
-                boardState[ri][ci] = buttons[ri][ci].getState();
-            }
-        }
-    }
 
     void initBoard() {
   
@@ -43,6 +34,15 @@ public abstract class AbstractGo extends JFrame {
         add(panel);
         setVisible(true);
     }
+
+    void initBoardState() {
+    
+        for (int ri = 0; ri < rows; ++ri) {
+            for (int ci = 0; ci < cols; ++ci) {
+                boardState[ri][ci] = buttons[ri][ci].getState();
+            }
+        }
+    }   
     
     static boolean goalTest(GoButton.ButtonState[][] config) {
     

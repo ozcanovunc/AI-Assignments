@@ -1,14 +1,14 @@
 import java.util.*;
 import java.util.List;
 
-public class GoBfs extends AbstractGo {
-
-    private Queue<GoNode> fringe;
+public class GoDfs extends AbstractGo {
+ 
+    private Stack<GoNode> fringe;
 
     @SuppressWarnings("OverridableMethodCallInConstructor")
-    GoBfs(int rows, int cols) {
+    GoDfs(int rows, int cols) {
         
-        fringe = new LinkedList();
+        fringe = new Stack();
         boardState = new GoButton.ButtonState[rows][cols];
         this.rows = rows;
         this.cols = cols;
@@ -24,15 +24,15 @@ public class GoBfs extends AbstractGo {
         GoNode headNode;
         List<GoNode> expandedNodes;
         
-        fringe.add(root);
+        fringe.push(root);
         
         while (true) {
             // If fringe is empty then return failure
             if (fringe.isEmpty())
                 return null;
             
-            headNode = fringe.poll();
-            
+            headNode = fringe.pop();
+
             // If the node contains a goal state then return it
             if (goalTest(headNode.getState()))
                 return headNode;

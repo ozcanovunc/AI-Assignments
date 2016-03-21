@@ -8,7 +8,7 @@ public class GoNode {
     private final int depth;
     private final int actionX;
     private final int actionY;
-    
+
     @SuppressWarnings("LeakingThisInConstructor")
     public GoNode(GoButton.ButtonState[][] state, GoNode parent, int actionX, int actionY) {
         

@@ -4,7 +4,7 @@ public class GoGame {
 
     public static void main(String[] args) throws IOException {
         
-        GoBfs game = new GoBfs(3,4);
+        AbstractGo game = new GoBfs(4, 4);
 
         System.in.read();
         
