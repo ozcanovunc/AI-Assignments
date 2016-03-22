@@ -8,10 +8,14 @@ public class GoBfs extends AbstractGo {
     @SuppressWarnings("OverridableMethodCallInConstructor")
     GoBfs(int rows, int cols) {
         
-        fringe = new LinkedList();
-        boardState = new GoButton.ButtonState[rows][cols];
+        this.fringe = new LinkedList();
+        this.result = new Stack();
+        this.boardState = new GoButton.ButtonState[rows][cols];
         this.rows = rows;
         this.cols = cols;
+        this.expandedNodeCount = 0;
+        this.moveCount = 0;
+        this.fringeSize = 0;
         initBoard();
     }
     
@@ -19,7 +23,6 @@ public class GoBfs extends AbstractGo {
     GoNode treeSearch() {
 
         // Initialize the search tree
-        initBoardState();
         GoNode root = new GoNode(boardState);
         GoNode headNode;
         List<GoNode> expandedNodes;
@@ -34,15 +37,19 @@ public class GoBfs extends AbstractGo {
             headNode = fringe.poll();
             
             // If the node contains a goal state then return it
-            if (goalTest(headNode.getState()))
+            if (goalTest(headNode.getState())) {
+                fringeSize = fringe.size();
+                moveCount = headNode.getDepth();
                 return headNode;
+            }
             
             // Expand the node and add the resulting nodes to the search tree     
             expandedNodes = expand(headNode);
             if (expandedNodes != null) {
+                expandedNodeCount += expandedNodes.size();
                 fringe.addAll(expandedNodes);
             }
-        } 
+        }
     }
 
     @Override
