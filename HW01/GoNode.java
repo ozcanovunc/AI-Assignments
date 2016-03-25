@@ -44,7 +44,7 @@ public class GoNode {
         // There is no last action and parent as well
         this.actionX = -1;
         this.actionY = -1;
-        this.parent = null;    
+        this.parent = null;
     }
     
     @Override
@@ -94,7 +94,58 @@ public class GoNode {
     }
     
     private void updateState() {
-            
+
+        // DIAGONALS
+
+        if (actionX - 2 >= 0 && actionY + 2 < state[0].length) // Up right
+            for (int i = actionX - 1, j = actionY + 1; 
+                    i >= 0 && j < state[0].length; --i, ++j) {
+                if (state[i][j] == GoButton.ButtonState.BLACK_X) {
+                    fillGaps(actionX, actionY, i, j);
+                    break;
+                }
+                if (state[i][j] != GoButton.ButtonState.EMPTY) {
+                    break;
+                }  
+            }
+          
+        if (actionY - 2 >=0 && actionX + 2 < state.length) // Down left
+            for (int i = actionX + 1, j = actionY - 1; 
+                    i < state.length && j >= 0; ++i, --j) {
+                if (state[i][j] == GoButton.ButtonState.BLACK_X) {
+                    fillGaps(actionX, actionY, i, j);
+                    break;
+                }
+                if (state[i][j] != GoButton.ButtonState.EMPTY) {
+                    break;
+                }
+            }
+                
+        if (actionX - 2 >= 0 && actionY - 2 >= 0) // Up left   
+            for (int i = actionX - 1, j = actionY - 1; i >= 0 && j >= 0; --i, --j) {
+                if (state[i][j] == GoButton.ButtonState.BLACK_X) {
+                    fillGaps(actionX, actionY, i, j);
+                    break;
+                }
+                if (state[i][j] != GoButton.ButtonState.EMPTY) {
+                    break;
+                }  
+            }
+  
+        if (actionX + 2 < state.length && actionY + 2 < state[0].length) // Down right
+            for (int i = actionX + 1, j = actionY + 1; 
+                    i < state.length && j < state[0].length; ++i, ++j) {
+                if (state[i][j] == GoButton.ButtonState.BLACK_X) {
+                    fillGaps(actionX, actionY, i, j);
+                    break;
+                }
+                if (state[i][j] != GoButton.ButtonState.EMPTY) {
+                    break;
+                }
+            }
+        
+        // LINEAR
+        
         if (actionX - 2 >= 0) // Up
             for (int i = actionX - 1; i >= 0; --i) {
                 if (state[i][actionY] == GoButton.ButtonState.BLACK_X) {
@@ -160,6 +211,29 @@ public class GoNode {
         else if (y0 == y1 && x0 > x1) {
             for (int i = x1 + 1; i < x0; ++i) {
                 state[i][y0] = GoButton.ButtonState.BLACK_O;      
+            }
+        }
+        
+        // DIAGONALS
+        
+        else if (x0 > x1 && y0 < y1) { // Up right
+            for (int i = x0 - 1, j = y0 + 1; i > x1; --i, ++j) {
+                state[i][j] = GoButton.ButtonState.BLACK_O;      
+            }
+        }
+        else if (x0 < x1 && y0 > y1) { // Down left
+            for (int i = x0 + 1, j = y0 - 1; i < x1; ++i, --j) {
+                state[i][j] = GoButton.ButtonState.BLACK_O;
+            }
+        }
+        else if (x0 < x1 && y0 < y1) { // Down right
+            for (int i = x0 + 1, j = y0 + 1; i < x1; ++i, ++j) {
+                state[i][j] = GoButton.ButtonState.BLACK_O;
+            }
+        }
+        else if (x0 > x1 && y0 > y1) { // Up left
+            for (int i = x0 - 1, j = y0 - 1; i > x1; --i, --j) {
+                state[i][j] = GoButton.ButtonState.BLACK_O;
             }
         }
     }
