@@ -95,7 +95,7 @@ public class GoNode {
     
     private void updateState() {
 
-        // DIAGONALS
+        // DIAGONAL
 
         if (actionX - 2 >= 0 && actionY + 2 < state[0].length) // Up right
             for (int i = actionX - 1, j = actionY + 1; 
@@ -193,6 +193,8 @@ public class GoNode {
     
     private void fillGaps(int x0, int y0, int x1, int y1) {
     
+        // LINEAR
+        
         if (x0 == x1 && y0 < y1) {
             for (int i = y0 + 1; i < y1; ++i) {
                 state[x0][i] = GoButton.ButtonState.BLACK_O;      
@@ -214,7 +216,7 @@ public class GoNode {
             }
         }
         
-        // DIAGONALS
+        // DIAGONAL
         
         else if (x0 > x1 && y0 < y1) { // Up right
             for (int i = x0 - 1, j = y0 + 1; i > x1; --i, ++j) {
