@@ -1,3 +1,4 @@
+import java.awt.Point;
 import java.util.*;
 
 public class GoNode {
@@ -8,33 +9,32 @@ public class GoNode {
     private final int depth;
     private final int actionX;
     private final int actionY;
-    private final boolean isMax;
+    private final AdversarialGo.Player player;
 
     @SuppressWarnings("LeakingThisInConstructor")
     public GoNode(GoButton.ButtonState[][] state, GoNode parent, int actionX, 
-            int actionY) {
+            int actionY, AdversarialGo.Player player) {
 
         children = new ArrayList();
         this.state = state;
         this.actionX = actionX;
         this.actionY = actionY;
+        this.player = player;
 
         if (parent != null) {
             this.depth = parent.getDepth() + 1;
-            this.isMax = !parent.isMax;
             parent.addChild(this);
         }
         else {
-            this.isMax = true;
             this.depth = 0;
         }
         
         // Make the move (act)
-        if (this.isMax) {
-            state[actionX][actionY]  = GoButton.ButtonState.UPPER_A;
+        if (this.player == AdversarialGo.Player.PLAYER_MAX) {
+            state[actionX][actionY] = GoButton.ButtonState.UPPER_A;
         }
         else {
-            state[actionX][actionY]  = GoButton.ButtonState.UPPER_B;
+            state[actionX][actionY] = GoButton.ButtonState.UPPER_B;
         }
         updateState();
     }
@@ -42,10 +42,10 @@ public class GoNode {
     /**
      * Constructor for root node
      * @param state 
-     * @param isMax 
+     * @param player 
      */
     @SuppressWarnings("LeakingThisInConstructor")
-    public GoNode(GoButton.ButtonState[][] state, boolean isMax) {
+    public GoNode(GoButton.ButtonState[][] state, AdversarialGo.Player player) {
         
         children = new ArrayList();
         this.state = state;
@@ -55,7 +55,7 @@ public class GoNode {
         this.actionX = -1;
         this.actionY = -1;
         this.parent = null;
-        this.isMax = isMax;
+        this.player = player;
     }
 
     @Override
@@ -87,6 +87,14 @@ public class GoNode {
         return this.depth;
     }
     
+    public AdversarialGo.Player getPlayerType() {
+        return this.player;
+    }
+    
+    public Point getLastAction() {
+        return new Point(actionX, actionY);
+    }
+    
     public void addChild(GoNode child) {       
         child.parent = this;
         this.children.add(child);
@@ -111,8 +119,10 @@ public class GoNode {
         if (actionX - 2 >= 0 && actionY + 2 < state[0].length) // Up right
             for (int i = actionX - 1, j = actionY + 1; 
                     i >= 0 && j < state[0].length; --i, ++j) {
-                if (state[i][j] == GoButton.ButtonState.UPPER_A || 
-                        state[i][j] == GoButton.ButtonState.UPPER_B) {
+                if ((state[i][j] == GoButton.ButtonState.UPPER_A &&  
+                        player == AdversarialGo.Player.PLAYER_MAX) || 
+                        (state[i][j] == GoButton.ButtonState.UPPER_B && 
+                        player == AdversarialGo.Player.PLAYER_MIN)) {
                     fillGaps(actionX, actionY, i, j);
                     break;
                 }
@@ -124,8 +134,10 @@ public class GoNode {
         if (actionY - 2 >=0 && actionX + 2 < state.length) // Down left
             for (int i = actionX + 1, j = actionY - 1; 
                     i < state.length && j >= 0; ++i, --j) {
-                if (state[i][j] == GoButton.ButtonState.UPPER_A || 
-                        state[i][j] == GoButton.ButtonState.UPPER_B) {
+                if ((state[i][j] == GoButton.ButtonState.UPPER_A &&  
+                        player == AdversarialGo.Player.PLAYER_MAX) || 
+                        (state[i][j] == GoButton.ButtonState.UPPER_B && 
+                        player == AdversarialGo.Player.PLAYER_MIN)) {
                     fillGaps(actionX, actionY, i, j);
                     break;
                 }
@@ -136,8 +148,10 @@ public class GoNode {
                 
         if (actionX - 2 >= 0 && actionY - 2 >= 0) // Up left   
             for (int i = actionX - 1, j = actionY - 1; i >= 0 && j >= 0; --i, --j) {
-                if (state[i][j] == GoButton.ButtonState.UPPER_A || 
-                        state[i][j] == GoButton.ButtonState.UPPER_B) {
+                if ((state[i][j] == GoButton.ButtonState.UPPER_A &&  
+                        player == AdversarialGo.Player.PLAYER_MAX) || 
+                        (state[i][j] == GoButton.ButtonState.UPPER_B && 
+                        player == AdversarialGo.Player.PLAYER_MIN)) {
                     fillGaps(actionX, actionY, i, j);
                     break;
                 }
@@ -149,8 +163,10 @@ public class GoNode {
         if (actionX + 2 < state.length && actionY + 2 < state[0].length) // Down right
             for (int i = actionX + 1, j = actionY + 1; 
                     i < state.length && j < state[0].length; ++i, ++j) {
-                if (state[i][j] == GoButton.ButtonState.UPPER_A || 
-                        state[i][j] == GoButton.ButtonState.UPPER_B) {
+                if ((state[i][j] == GoButton.ButtonState.UPPER_A &&  
+                        player == AdversarialGo.Player.PLAYER_MAX) || 
+                        (state[i][j] == GoButton.ButtonState.UPPER_B && 
+                        player == AdversarialGo.Player.PLAYER_MIN)) {
                     fillGaps(actionX, actionY, i, j);
                     break;
                 }
@@ -163,8 +179,10 @@ public class GoNode {
         
         if (actionX - 2 >= 0) // Up
             for (int i = actionX - 1; i >= 0; --i) {
-                if (state[i][actionY] == GoButton.ButtonState.UPPER_A || 
-                        state[i][actionY] == GoButton.ButtonState.UPPER_B) {
+                if ((state[i][actionY] == GoButton.ButtonState.UPPER_A &&  
+                        player == AdversarialGo.Player.PLAYER_MAX) || 
+                        (state[i][actionY] == GoButton.ButtonState.UPPER_B && 
+                        player == AdversarialGo.Player.PLAYER_MIN)) {
                     fillGaps(actionX, actionY, i, actionY);
                     break;
                 }
@@ -175,8 +193,10 @@ public class GoNode {
 
         if (actionX + 2 < state.length) // Down
             for (int i = actionX + 1; i < state.length; ++i) {
-                if (state[i][actionY] == GoButton.ButtonState.UPPER_A || 
-                        state[i][actionY] == GoButton.ButtonState.UPPER_B) {
+                if ((state[i][actionY] == GoButton.ButtonState.UPPER_A &&  
+                        player == AdversarialGo.Player.PLAYER_MAX) || 
+                        (state[i][actionY] == GoButton.ButtonState.UPPER_B && 
+                        player == AdversarialGo.Player.PLAYER_MIN)) {
                     fillGaps(actionX, actionY, i, actionY);
                     break;
                 }
@@ -187,8 +207,10 @@ public class GoNode {
      
         if (actionY + 2 < state[0].length) // Right
             for (int i = actionY + 1; i < state[0].length; ++i) {
-                if (state[actionX][i] == GoButton.ButtonState.UPPER_A || 
-                        state[actionX][i] == GoButton.ButtonState.UPPER_B) {
+                if ((state[actionX][i] == GoButton.ButtonState.UPPER_A &&  
+                        player == AdversarialGo.Player.PLAYER_MAX) || 
+                        (state[actionX][i] == GoButton.ButtonState.UPPER_B && 
+                        player == AdversarialGo.Player.PLAYER_MIN)) {
                     fillGaps(actionX, actionY, actionX, i);
                     break;
                 }
@@ -199,8 +221,10 @@ public class GoNode {
 
         if (actionY - 2 >= 0) // Left
             for (int i = actionY - 1; i >= 0; --i) {
-                if (state[actionX][i] == GoButton.ButtonState.UPPER_A || 
-                        state[actionX][i] == GoButton.ButtonState.UPPER_B) {
+                if ((state[actionX][i] == GoButton.ButtonState.UPPER_A &&  
+                        player == AdversarialGo.Player.PLAYER_MAX) || 
+                        (state[actionX][i] == GoButton.ButtonState.UPPER_B && 
+                        player == AdversarialGo.Player.PLAYER_MIN)) {
                     fillGaps(actionX, actionY, actionX, i);
                     break;
                 }
@@ -209,48 +233,48 @@ public class GoNode {
                 } 
             }
     }
-
+    
     private void fillGaps(int x0, int y0, int x1, int y1) {
     
         // LINEAR
         
         if (x0 == x1 && y0 < y1) {
             for (int i = y0 + 1; i < y1; ++i) {
-                if (this.isMax){
+                if (this.player == AdversarialGo.Player.PLAYER_MAX) {
                     state[x0][i] = GoButton.ButtonState.LOWER_A;
                 }
-                else {
+                else{
                     state[x0][i] = GoButton.ButtonState.LOWER_B;
                 }
             }
         }
         else if (x0 == x1 && y0 > y1) {
             for (int i = y1 + 1; i < y0; ++i) {
-                if (this.isMax){
+                if (this.player == AdversarialGo.Player.PLAYER_MAX) {
                     state[x0][i] = GoButton.ButtonState.LOWER_A;
                 }
-                else {
+                else{
                     state[x0][i] = GoButton.ButtonState.LOWER_B;
                 }
             }   
         }
         else if (y0 == y1 && x0 < x1) {
             for (int i = x0 + 1; i < x1; ++i) {
-                if (this.isMax){
-                    state[x0][i] = GoButton.ButtonState.LOWER_A;
+                if (this.player == AdversarialGo.Player.PLAYER_MAX) {
+                    state[i][y0] = GoButton.ButtonState.LOWER_A;
                 }
-                else {
-                    state[x0][i] = GoButton.ButtonState.LOWER_B;
+                else{
+                    state[i][y0] = GoButton.ButtonState.LOWER_B;
                 }
             }
         }
         else if (y0 == y1 && x0 > x1) {
             for (int i = x1 + 1; i < x0; ++i) {
-                if (this.isMax){
-                    state[x0][i] = GoButton.ButtonState.LOWER_A;
+                if (this.player == AdversarialGo.Player.PLAYER_MAX) {
+                    state[i][y0] = GoButton.ButtonState.LOWER_A;
                 }
-                else {
-                    state[x0][i] = GoButton.ButtonState.LOWER_B;
+                else{
+                    state[i][y0] = GoButton.ButtonState.LOWER_B;
                 }
             }
         }
@@ -259,41 +283,41 @@ public class GoNode {
         
         else if (x0 > x1 && y0 < y1) { // Up right
             for (int i = x0 - 1, j = y0 + 1; i > x1; --i, ++j) {
-                if (this.isMax){
-                    state[x0][i] = GoButton.ButtonState.LOWER_A;
+                if (this.player == AdversarialGo.Player.PLAYER_MAX) {
+                    state[i][j] = GoButton.ButtonState.LOWER_A;
                 }
                 else {
-                    state[x0][i] = GoButton.ButtonState.LOWER_B;
+                    state[i][j] = GoButton.ButtonState.LOWER_B;
                 }
             }
         }
         else if (x0 < x1 && y0 > y1) { // Down left
             for (int i = x0 + 1, j = y0 - 1; i < x1; ++i, --j) {
-                if (this.isMax){
-                    state[x0][i] = GoButton.ButtonState.LOWER_A;
+                if (this.player == AdversarialGo.Player.PLAYER_MAX) {
+                    state[i][j] = GoButton.ButtonState.LOWER_A;
                 }
                 else {
-                    state[x0][i] = GoButton.ButtonState.LOWER_B;
+                    state[i][j] = GoButton.ButtonState.LOWER_B;
                 }
             }
         }
         else if (x0 < x1 && y0 < y1) { // Down right
             for (int i = x0 + 1, j = y0 + 1; i < x1; ++i, ++j) {
-                if (this.isMax){
-                    state[x0][i] = GoButton.ButtonState.LOWER_A;
+                if (this.player == AdversarialGo.Player.PLAYER_MAX) {
+                    state[i][j] = GoButton.ButtonState.LOWER_A;
                 }
                 else {
-                    state[x0][i] = GoButton.ButtonState.LOWER_B;
+                    state[i][j] = GoButton.ButtonState.LOWER_B;
                 }
             }
         }
         else if (x0 > x1 && y0 > y1) { // Up left
             for (int i = x0 - 1, j = y0 - 1; i > x1; --i, --j) {
-                if (this.isMax){
-                    state[x0][i] = GoButton.ButtonState.LOWER_A;
+                if (this.player == AdversarialGo.Player.PLAYER_MAX) {
+                    state[i][j] = GoButton.ButtonState.LOWER_A;
                 }
                 else {
-                    state[x0][i] = GoButton.ButtonState.LOWER_B;
+                    state[i][j] = GoButton.ButtonState.LOWER_B;
                 }
             }
         }

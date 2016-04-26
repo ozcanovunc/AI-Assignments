@@ -34,6 +34,7 @@ public class GoButton extends JButton implements ActionListener, Serializable {
             @Override
             public void actionPerformed(ActionEvent e) {
                 setState(ButtonState.UPPER_B);
+                //setEnabled(false);
             }
         });
         
@@ -41,6 +42,7 @@ public class GoButton extends JButton implements ActionListener, Serializable {
             @Override
             public void actionPerformed(ActionEvent e) {
                 setState(ButtonState.UPPER_A);
+                //setEnabled(false);
             }
         });
     }
@@ -78,5 +80,6 @@ public class GoButton extends JButton implements ActionListener, Serializable {
     @Override
     public void actionPerformed(ActionEvent e) {
         setState(ButtonState.LOWER_X);
+        //setEnabled(false);
     }
 }
