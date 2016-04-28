@@ -7,8 +7,16 @@ public class GoNode {
     private GoNode parent;
     private final List<GoNode> children;
     private final int depth;
+    
+    /**
+     * actionX, actionY - Last action made by player
+     */
     private final int actionX;
     private final int actionY;
+    
+    /**
+     * If player is min or max
+     */
     private final AdversarialGo.Player player;
 
     @SuppressWarnings("LeakingThisInConstructor")

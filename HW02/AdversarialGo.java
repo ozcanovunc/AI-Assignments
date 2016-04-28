@@ -12,19 +12,26 @@ public class AdversarialGo extends JFrame {
     private GoButton.ButtonState[][] boardState;
     private final int rows;
     private final int cols;
+    
+    private int nodesExpanded;
 
-    // Last move that player's been played
+    /**
+     * Last move of the player
+     */
     private int lastXMove;
     private int lastYMove;
+    
+    /**
+     * Type of the player
+     */
     private Player player;
-    private int nodesExpanded;
     
     public static enum Player {
         PLAYER_MIN, PLAYER_MAX
     }
 
     @SuppressWarnings({"Convert2Lambda", "OverridableMethodCallInConstructor"})
-    AdversarialGo(int rows, int cols, Player player, int depth, boolean isFirstUtilityUsed) {
+    AdversarialGo(int rows, int cols, Player player, int depth, boolean firstUtilityUsed) {
 
         panel = new JPanel();
         buttons = new GoButton[rows][cols];
@@ -43,8 +50,6 @@ public class AdversarialGo extends JFrame {
             for (int ci = 0; ci < cols; ++ci) {
                 
                 buttons[ri][ci] = new GoButton();
-                
-                // Add action listener to store the last move
                 buttons[ri][ci].addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -57,9 +62,8 @@ public class AdversarialGo extends JFrame {
                                     }
                                 }
                             }
-                    } // actionPerformed
+                    }
                 });
-
                 panel.add(buttons[ri][ci]);
             }
         }
@@ -67,7 +71,10 @@ public class AdversarialGo extends JFrame {
         JButton startButton = new JButton("START");
         JButton nextButton = new JButton("NEXT");      
         nextButton.setVisible(false);
-
+        
+        /**
+         * Action listener for opponent to make their move
+         */
         nextButton.addActionListener(new ActionListener() {
 
             @Override
@@ -75,14 +82,14 @@ public class AdversarialGo extends JFrame {
 
                 GoNode player1, player2;
                 
-                updateState();
+                updateBoardState();
                 
-                // Check if game is over
+                /**
+                 * Check if the game is over
+                 */
                 if (goalTest(boardState)) {
-                    
-                    Player p = getWinner(boardState);
-                    
-                    if (p == Player.PLAYER_MAX){
+                                        
+                    if (getWinner(boardState) == Player.PLAYER_MAX){
                         JOptionPane.showMessageDialog(null, 
                                 "The winner is: Player A", "Result", 
                                 JOptionPane.INFORMATION_MESSAGE);
@@ -99,11 +106,17 @@ public class AdversarialGo extends JFrame {
                 player1 = new GoNode(boardState, null, lastXMove, lastYMove, player);
                 boardState = copyStateArray(player1.getState());
                 
-                // Get the appropriate action for the computer (minimax algorithm)
+                /**
+                 * Get the appropriate action for the computer (minimax algorithm)
+                 * and calculate expanded nodes for each move
+                 */
                 nodesExpanded = 0;
-                Point action = getAction(boardState, MinimaxDecision(player1, depth, true));
+                Point action = getAction(boardState, 
+                        MinimaxDecision(player1, depth, firstUtilityUsed));
 
-                // Show user the number of nodes expanded
+                /**
+                 * Show the number of nodes expanded
+                 */
                 JOptionPane.showMessageDialog(null, "Expanded nodes: " +  
                         nodesExpanded, "Result", JOptionPane.INFORMATION_MESSAGE);
                 
@@ -119,16 +132,19 @@ public class AdversarialGo extends JFrame {
                 }
 
                 boardState = copyStateArray(player2.getState());
-                updateButtons();              
+                updateBoardButtons();
             }    
         });
 
+        /**
+         * Start the game
+         */
         startButton.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                updateState();
+                updateBoardState();
 
                 for (int ri = 0; ri < rows; ++ri) {
                     for (int ci = 0; ci < cols; ++ci) {
@@ -159,7 +175,7 @@ public class AdversarialGo extends JFrame {
         setVisible(true);
     }
 
-    private GoNode MinimaxDecision(GoNode node, int depth, boolean isFirstUtilityUsed) {
+    private GoNode MinimaxDecision(GoNode node, int depth, boolean firstUtilityUsed) {
  
         List<GoNode> successors = expand(node);
         GoNode temp;
@@ -176,26 +192,34 @@ public class AdversarialGo extends JFrame {
             
             if (node.getPlayerType() == Player.PLAYER_MIN) {
                 for (int i = 1; i < successors.size(); ++i) {
-                    // Get the node with highest utility for MAX
-                    if (utility1(successors.get(i).getState()) 
-                            > utility1(temp.getState()) && isFirstUtilityUsed){
+                    /**
+                     * Get the node with highest utility for MAX
+                     */
+                    if (evaluationFunction1(successors.get(i).getState()) 
+                            > evaluationFunction1(temp.getState()) 
+                            && firstUtilityUsed) {
                         temp = successors.get(i);
                     }
-                    else if (utility2(successors.get(i).getState()) 
-                            > utility2(temp.getState()) && !isFirstUtilityUsed){
+                    else if (evaluationFunction2(successors.get(i).getState()) 
+                            > evaluationFunction2(temp.getState()) 
+                            && !firstUtilityUsed) {
                         temp = successors.get(i);
                     }
                 }
             }
             else {
                 for (int i = 1; i < successors.size(); ++i) {
-                    // Get the node with highest utility for MIN
-                    if (utility1(successors.get(i).getState()) 
-                            < utility1(temp.getState()) && isFirstUtilityUsed){
+                    /**
+                     * Get the node with highest utility for MIN
+                     */
+                    if (evaluationFunction1(successors.get(i).getState()) 
+                            < evaluationFunction1(temp.getState()) 
+                            && firstUtilityUsed) {
                         temp = successors.get(i);
                     }
-                    else if (utility2(successors.get(i).getState()) 
-                            < utility2(temp.getState()) && !isFirstUtilityUsed){
+                    else if (evaluationFunction2(successors.get(i).getState()) 
+                            < evaluationFunction2(temp.getState()) 
+                            && !firstUtilityUsed) {
                         temp = successors.get(i);
                     }    
                 }
@@ -205,19 +229,21 @@ public class AdversarialGo extends JFrame {
         }
         else {
             
-            temp = MinimaxDecision(successors.get(0), depth - 1, isFirstUtilityUsed);
+            temp = MinimaxDecision(successors.get(0), depth - 1, firstUtilityUsed);
         
             if (node.getPlayerType() == Player.PLAYER_MIN) {
                 
                 for (int i = 0; i < successors.size(); ++i) {
                     GoNode temp2 = MinimaxDecision(successors.get(i), depth - 1, 
-                            isFirstUtilityUsed);
-                    if (utility1(temp2.getState()) > utility1(temp.getState()) 
-                            && isFirstUtilityUsed) {
+                            firstUtilityUsed);
+                    if (evaluationFunction1(temp2.getState()) > 
+                            evaluationFunction1(temp.getState()) 
+                            && firstUtilityUsed) {
                         temp = temp2;
                     }
-                    else if (utility2(temp2.getState()) > utility2(temp.getState()) 
-                            && !isFirstUtilityUsed) {
+                    else if (evaluationFunction2(temp2.getState()) > 
+                            evaluationFunction2(temp.getState()) 
+                            && !firstUtilityUsed) {
                         temp = temp2;
                     }
                 }
@@ -226,13 +252,15 @@ public class AdversarialGo extends JFrame {
                 
                 for (int i = 0; i < successors.size(); ++i) {
                     GoNode temp2 = MinimaxDecision(successors.get(i), depth - 1, 
-                            isFirstUtilityUsed);
-                    if (utility1(temp2.getState()) < utility1(temp.getState()) 
-                            && isFirstUtilityUsed) {
+                            firstUtilityUsed);
+                    if (evaluationFunction1(temp2.getState()) < 
+                            evaluationFunction1(temp.getState()) 
+                            && firstUtilityUsed) {
                         temp = temp2;
                     }
-                    else if (utility2(temp2.getState()) < utility2(temp.getState()) 
-                            && !isFirstUtilityUsed) {
+                    else if (evaluationFunction2(temp2.getState()) < 
+                            evaluationFunction2(temp.getState()) 
+                            && !firstUtilityUsed) {
                         temp = temp2;
                     }
                 }
@@ -257,7 +285,7 @@ public class AdversarialGo extends JFrame {
         return temp.getLastAction();        
     }
     
-    private void updateState() {
+    private void updateBoardState() {
     
         for (int ri = 0; ri < rows; ++ri) {
             for (int ci = 0; ci < cols; ++ci) {
@@ -266,14 +294,19 @@ public class AdversarialGo extends JFrame {
         }
     }
 
-    private void updateButtons() {
+    private void updateBoardButtons() {
         for (int ri = 0; ri < rows; ++ri) {
             for (int ci = 0; ci < cols; ++ci) {
                 buttons[ri][ci].setState(boardState[ri][ci]);
             }
         }    
     }
-    
+
+    /**
+     * Check if the board is full or not
+     * @param config
+     * @return 
+     */
     private static boolean goalTest(GoButton.ButtonState[][] config) {
     
         boolean isSolution = true;
@@ -316,7 +349,7 @@ public class AdversarialGo extends JFrame {
         return newArray;  
     }
     
-    private int utility1(GoButton.ButtonState[][] config)
+    private int evaluationFunction1(GoButton.ButtonState[][] config)
     {
         int evalValue = 0;
         
@@ -333,7 +366,7 @@ public class AdversarialGo extends JFrame {
         return evalValue;
     }
 
-    private int utility2(GoButton.ButtonState[][] config)
+    private int evaluationFunction2(GoButton.ButtonState[][] config)
     {
         int evalValueA = 0, evalValueB = 0;
         
@@ -372,23 +405,19 @@ public class AdversarialGo extends JFrame {
         
         List<GoNode> successors = new ArrayList();
         GoButton.ButtonState[][] parentState = parent.getState();
-        // Type of the successor nodes
-        Player player;
         
-        if (parent.getPlayerType() == Player.PLAYER_MAX) {
-            player = Player.PLAYER_MIN;
-        }
-        else {
-            player = Player.PLAYER_MAX;
-        }
+        /**
+         * Type of the successor nodes
+         */
+        Player p = Player.PLAYER_MAX == parent.getPlayerType() ? 
+                Player.PLAYER_MIN : Player.PLAYER_MAX;
         
         for (int ri = 0; ri < rows; ++ri) {
             for (int ci = 0; ci < cols; ++ci) {
                 if (parentState[ri][ci] == GoButton.ButtonState.EMPTY) {
-                    // Add new child
                     successors.add(new GoNode(
                             copyStateArray(parent.getState()), 
-                            parent, ri, ci, player));
+                            parent, ri, ci, p));
                 }   
             }
         }

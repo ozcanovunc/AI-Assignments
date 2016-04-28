@@ -7,7 +7,7 @@ public class GoGame {
     @SuppressWarnings("empty-statement")
     public static void main(String[] args) throws IOException {
         
-        int rows, cols, depth, evalFunc; 
+        int rows, cols, depth, eval; 
         String user;
         AdversarialGo.Player player;
         Object[] userRange = {"MAX = A", "MIN = B"};
@@ -49,8 +49,12 @@ public class GoGame {
                     null,
                     userRange,
                     null); 
-        
-        evalFunc = (int)JOptionPane.showInputDialog(
+
+        /**
+         * There are two evaluation functions implemented in this project,
+         * first one is quite better.
+         */
+        eval =      (int)JOptionPane.showInputDialog(
                     new JPanel(),
                     "Evaluation function",
                     "HW01",
@@ -66,6 +70,6 @@ public class GoGame {
             player = AdversarialGo.Player.PLAYER_MIN;
         }
         
-        new AdversarialGo(rows, cols, player, depth, evalFunc == 1);
+        new AdversarialGo(rows, cols, player, depth, eval == 1);
     }
 }

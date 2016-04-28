@@ -30,19 +30,23 @@ public class GoButton extends JButton implements ActionListener, Serializable {
         this.setState(ButtonState.EMPTY);
         this.addActionListener(this);
         
+        /**
+         * Action listener for player MIN (Represented as B)
+         */
         this.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 setState(ButtonState.UPPER_B);
-                //setEnabled(false);
             }
         });
         
+        /**
+         * Action listener for player MAX (Represented as A)
+         */
         this.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 setState(ButtonState.UPPER_A);
-                //setEnabled(false);
             }
         });
     }
@@ -80,6 +84,5 @@ public class GoButton extends JButton implements ActionListener, Serializable {
     @Override
     public void actionPerformed(ActionEvent e) {
         setState(ButtonState.LOWER_X);
-        //setEnabled(false);
     }
 }
