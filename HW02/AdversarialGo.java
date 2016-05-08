@@ -81,6 +81,7 @@ public class AdversarialGo extends JFrame {
             public void actionPerformed(ActionEvent e) {
 
                 GoNode player1, player2;
+                int winnerResult;
                 
                 updateBoardState();
                 
@@ -88,15 +89,22 @@ public class AdversarialGo extends JFrame {
                  * Check if the game is over
                  */
                 if (goalTest(boardState)) {
-                                        
-                    if (getWinner(boardState) == Player.PLAYER_MAX){
+                        
+                    winnerResult = getWinner(boardState);
+                    
+                    if (winnerResult > 0){
                         JOptionPane.showMessageDialog(null, 
-                                "The winner is: Player A", "Result", 
+                                "The winner is: Player A!", "Result", 
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    else if (winnerResult < 0){
+                        JOptionPane.showMessageDialog(null, 
+                                "The winner is: Player B!", "Result", 
                                 JOptionPane.INFORMATION_MESSAGE);
                     }
                     else {
                         JOptionPane.showMessageDialog(null, 
-                                "The winner is: Player B", "Result", 
+                                "There is no winner!", "Result", 
                                 JOptionPane.INFORMATION_MESSAGE);
                     }
                     
@@ -383,7 +391,13 @@ public class AdversarialGo extends JFrame {
         return this.player == Player.PLAYER_MAX ? evalValueB : evalValueA;
     }
     
-    private static Player getWinner(GoButton.ButtonState[][] config) {
+    /**
+     *
+     * @param config
+     * @return a positive number if the winner is MAX, negative number if the
+     * winner is MIN, zero if we have a tie
+     */
+    private static int getWinner(GoButton.ButtonState[][] config) {
 
         int numOfA = 0, numOfB = 0;
         
@@ -397,8 +411,8 @@ public class AdversarialGo extends JFrame {
                     ++numOfB;
             }
         }
-        
-        return numOfA > numOfB ? Player.PLAYER_MAX : Player.PLAYER_MIN;
+
+        return numOfA - numOfB;
     }
     
     public List<GoNode> expand(GoNode parent) {

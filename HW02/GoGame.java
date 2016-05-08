@@ -12,7 +12,7 @@ public class GoGame {
         AdversarialGo.Player player;
         Object[] userRange = {"MAX = A", "MIN = B"};
         Object[] evalRange = {1, 2};
-        Object[] boardRange = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        Object[] boardRange = {1, 2, 3, 4, 5, 6};
                 
         rows =      (int)JOptionPane.showInputDialog(
                     new JPanel(),
