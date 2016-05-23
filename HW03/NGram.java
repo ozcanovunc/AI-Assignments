@@ -1,5 +1,3 @@
-package ngram;
-
 import javax.swing.*;
 
 public class NGram {

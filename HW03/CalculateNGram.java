@@ -1,5 +1,3 @@
-package ngram;
-
 import java.io.*;
 import java.util.*;
 
@@ -32,7 +30,7 @@ public class CalculateNGram {
     public static boolean calculateOneGram(String directory, int k) {
 
         String[] trainingSet = readAll(directory).split("\\s+");
-        HashMap<String, Double> map = new HashMap();
+        HashMap<String, Double> map = new HashMap<>();
 
         // Calculate the number of occurences
         for (int si = 0; si < trainingSet.length; ++si) {
@@ -69,7 +67,7 @@ public class CalculateNGram {
     public static boolean calculateTwoGram(String directory, int k) {
         
         String[] trainingSet = readAll(directory).split("\\s+");
-        HashMap<String, Double> map = new HashMap();
+        HashMap<String, Double> map = new HashMap<>();
 
         // Calculate the number of occurences
         for (int si = 0; si < trainingSet.length - 1; ++si) {
@@ -110,7 +108,7 @@ public class CalculateNGram {
     public static boolean calculateThreeGram(String directory, int k) {
         
         String[] trainingSet = readAll(directory).split("\\s+");
-        HashMap<String, Double> map = new HashMap();
+        HashMap<String, Double> map = new HashMap<>();
 
         // Calculate the number of occurences
         for (int si = 0; si < trainingSet.length - 2; ++si) {
@@ -210,9 +208,11 @@ public class CalculateNGram {
                 }
             }
         }
-        finally {
-            return sb.toString().toLowerCase();
+        catch (Exception e) {
+            
         }
+        
+        return sb.toString().toLowerCase();
     }
     
     /**

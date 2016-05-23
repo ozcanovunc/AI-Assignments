@@ -1,5 +1,3 @@
-package ngram;
-
 import java.io.*;
 import java.util.*;
 
