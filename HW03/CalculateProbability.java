@@ -116,11 +116,76 @@ public class CalculateProbability {
     }
 
     private double getProbabilityTwoGram(String sentence, int k) {
-        return 0.0;
+        
+        String[] words = sentence.split("\\s+");
+        double probability = 1;
+        HashMap<String, Double> map;
+        
+        // Choose the appropriate hashmap
+        switch (k) {
+            case 3:
+                map = twoGram3;
+                break;
+            case 4:
+                map = twoGram4;
+                break;
+            case 8:
+                map = twoGram8;
+                break;
+            default:
+                return 0.0;
+        }
+        
+        for (int si = 0; si < words.length - 1; ++si) {
+            
+            // Get first k characters
+            String s1 = words[si].substring(0, Math.min(words[si].length(), k));
+            String s2 = words[si + 1].substring(0, Math.min(words[si + 1].length(), k));
+            String s = s1 + " " + s2;
+            
+            if (map.containsKey(s)) {
+                probability *= map.get(s);
+            }
+        }
+        
+        return probability;
     }
 
     private double getProbabilityThreeGram(String sentence, int k) {
-        return 0.0;
+        
+        String[] words = sentence.split("\\s+");
+        double probability = 1;
+        HashMap<String, Double> map;
+        
+        // Choose the appropriate hashmap
+        switch (k) {
+            case 3:
+                map = threeGram3;
+                break;
+            case 4:
+                map = threeGram4;
+                break;
+            case 8:
+                map = threeGram8;
+                break;
+            default:
+                return 0.0;
+        }
+        
+        for (int si = 0; si < words.length - 2; ++si) {
+            
+            // Get first k characters
+            String s1 = words[si].substring(0, Math.min(words[si].length(), k));
+            String s2 = words[si + 1].substring(0, Math.min(words[si + 1].length(), k));
+            String s3 = words[si + 2].substring(0, Math.min(words[si + 2].length(), k));
+            String s = s1 + " " + s2 + " " + s3;
+            
+            if (map.containsKey(s)) {
+                probability *= map.get(s);
+            }
+        }
+        
+        return probability;
     }
     
     private static Object deserializeObject(String inputFile) {
