@@ -4,7 +4,8 @@ public class NGram {
 
     public static void main(String[] args) {
        
-        CalculateNGram.calculateOneGram("1150haber\\raw_texts", 3);
-        
+        CalculateProbability calc = new CalculateProbability();
+        double probability = calc.getProbability("hava çok güzel", 1, 3);
+        System.out.println(probability);
     }   
 }

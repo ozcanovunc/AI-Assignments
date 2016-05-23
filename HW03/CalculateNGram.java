@@ -66,8 +66,90 @@ public class CalculateNGram {
         }
     }
 
-    
-    
+    public static boolean calculateTwoGram(String directory, int k) {
+        
+        String[] trainingSet = readAll(directory).split("\\s+");
+        HashMap<String, Double> map = new HashMap();
+
+        // Calculate the number of occurences
+        for (int si = 0; si < trainingSet.length - 1; ++si) {
+            
+            // Get first k characters
+            String s1 = trainingSet[si].substring(
+                    0, Math.min(trainingSet[si].length(), k));
+            String s2 = trainingSet[si + 1].substring(
+                    0, Math.min(trainingSet[si + 1].length(), k));
+            
+            String s = s1 + " " + s2;
+
+            if (map.containsKey(s)) {
+                map.put(s, map.get(s) + 1.0);
+            }
+            else {
+                map.put(s, 1.0);
+            }
+        }
+        
+        for (Map.Entry<String, Double> entry : map.entrySet()) {
+            entry.setValue(entry.getValue() / trainingSet.length);
+        }
+        
+        // Serializing trained 1-Gram
+        switch (k) {
+            case 3:
+                return serializeObject(map, TWO_GRAM_TRAINED_FILE_3);
+            case 4:
+                return serializeObject(map, TWO_GRAM_TRAINED_FILE_4);
+            case 8:
+                return serializeObject(map, TWO_GRAM_TRAINED_FILE_8);
+            default:
+                return false;
+        }
+    }
+
+    public static boolean calculateThreeGram(String directory, int k) {
+        
+        String[] trainingSet = readAll(directory).split("\\s+");
+        HashMap<String, Double> map = new HashMap();
+
+        // Calculate the number of occurences
+        for (int si = 0; si < trainingSet.length - 2; ++si) {
+            
+            // Get first k characters
+            String s1 = trainingSet[si].substring(
+                    0, Math.min(trainingSet[si].length(), k));
+            String s2 = trainingSet[si + 1].substring(
+                    0, Math.min(trainingSet[si + 1].length(), k));
+            String s3 = trainingSet[si + 2].substring(
+                    0, Math.min(trainingSet[si + 2].length(), k));
+            
+            String s = s1 + " " + s2 + " " + s3;
+
+            if (map.containsKey(s)) {
+                map.put(s, map.get(s) + 1.0);
+            }
+            else {
+                map.put(s, 1.0);
+            }
+        }
+        
+        for (Map.Entry<String, Double> entry : map.entrySet()) {
+            entry.setValue(entry.getValue() / trainingSet.length);
+        }
+        
+        // Serializing trained 1-Gram
+        switch (k) {
+            case 3:
+                return serializeObject(map, THREE_GRAM_TRAINED_FILE_3);
+            case 4:
+                return serializeObject(map, THREE_GRAM_TRAINED_FILE_4);
+            case 8:
+                return serializeObject(map, THREE_GRAM_TRAINED_FILE_8);
+            default:
+                return false;
+        }
+    }
+        
     /**
      * 
      * @param file
